@@ -12,10 +12,10 @@ library(jiebaR)
 library(tidytext)
 library(dplyr)
 
-setwd('C:/Users/Administrator/Desktop/E-commerce information mining')
+setwd('I:/E-commerce information mining')
 cutter <- worker(type = "tag", stop_word = "dict/stoplist.txt")
 
-SAVE = F
+SAVE = TRUE
 
 sku_collect = c(
   '7824307','136360','7265743','46472869374','100000198663','51382064682','3567887'
@@ -47,7 +47,8 @@ nonword_vec <- c("Ç×°®",
                  "ÒÉÎÊ"
 )
 
-load_data <- function(sku_collect){
+
+load_data <- function(sku_collect, properties = 'po'){
   if(FALSE)
   {
     "
@@ -58,19 +59,47 @@ load_data <- function(sku_collect){
   n_len = length(sku_collect)
   pbind_reviews = data.frame();nbind_reviews = data.frame()
   
-  for (i in 1:n_len){
-    pfile = paste('org_data/', sku_collect[i], sep = '')
-    pfile = paste(pfile, 'po.csv', sep = '')
-    nfile = paste('org_data/', sku_collect[i], sep = '')
-    nfile = paste(nfile, 'ne.csv', sep = '')
-    nreviews = read.csv(nfile, encoding = 'UTF-8')
-    nbind_reviews = rbind(nbind_reviews, nreviews)
-    previews = read.csv(pfile, encoding = 'UTF-8')
-    pbind_reviews = rbind(pbind_reviews, previews)
+  if(properties == 'po'){
+    for (i in 1:n_len){
+      tryCatch({
+        pfile = paste('org_data/', sku_collect[i], sep = '')
+        pfile = paste(pfile, 'po.csv', sep = '')
+        previews = read.csv(pfile, encoding = 'UTF-8')
+        previews$reviews_id = sku_collect[i]
+        pbind_reviews = rbind(pbind_reviews, previews)
+      }, warning = function(w) {
+        print(w)
+      }, error = function(e) {
+        print(e)
+      }, finally = {
+        print(paste(sku_collect[i], ' pass!', sep = ''))
+      })
+    }
+    
+    return(pbind_reviews)
+    
+  }else if(properties == 'ne'){
+    for (i in 1:n_len){
+      tryCatch({
+        nfile = paste('org_data/', sku_collect[i], sep = '')
+        nfile = paste(nfile, 'ne.csv', sep = '')
+        nreviews = read.csv(nfile, encoding = 'UTF-8')
+        nreviews$reviews_id = sku_collect[i]
+        nbind_reviews = rbind(nbind_reviews, nreviews)
+      }, warning = function(w) {
+        print(w)
+      }, error = function(e) {
+        print(e)
+      }, finally = {
+        print(paste(sku_collect[i], ' pass!', sep = ''))
+      })
+    }
+    
+    return(nbind_reviews)
   }
   
-  return(c(pbind_reviews, nbind_reviews))
 }
+
 
 delete_nonuseword <- function(comment,vector,numbool=T,wordbool=F){
   # delete some useless notations, numbers, etc.
@@ -112,17 +141,17 @@ return_result <- function(seg_word){
   return(result)
 }
 
-
-reviews <- sku_collect %>% load_data()
-previews <- reviews[1]; nreviews <- reviews[2]
-
+#reviews <- sku_collect %>% load_data()
+#previews <- reviews[1]; nreviews <- reviews[2] #has modified the bug, originally designed to return multiple varibles
+previews <- sku_collect %>% load_data(properties = 'po')
+nreviews <- sku_collect %>% load_data(properties = 'ne')
 
 
 delete_useless = FALSE # do not use nonword_vec.
 
 if (delete_useless){
-  ps_seg = return_segment(previews$X.U.FEFF.comments,nonword_vec,nb=T,wb=T)
-  ng_seg = return_segment(nreviews$X.U.FEFF.comments,nonword_vec,nb=T,wb=T)
+  ps_seg <- return_segment(previews$X.U.FEFF.comments,nonword_vec,nb=T,wb=T)
+  ng_seg <- return_segment(nreviews$X.U.FEFF.comments,nonword_vec,nb=T,wb=T)
 }else{
   ps_seg <- return_segment(previews$X.U.FEFF.comments,nonword_vec,nb=T,wb=F)
   ng_seg <- return_segment(nreviews$X.U.FEFF.comments,nonword_vec,nb=T,wb=F)
@@ -138,7 +167,7 @@ tfidf_Get <- function(term){
   data.frame(frequency %>% sort(decreasing = TRUE)) -> frequency
   c('word', 'n') -> names(frequency)
   
-  inner_join(ps_term, frequency) -> term
+  inner_join(term, frequency) -> term
   term %>% bind_tf_idf(word, id, n) %>% arrange(desc(tf_idf)) -> return_df
   print(head(return_df, 20))
   return(return_df)
@@ -151,9 +180,8 @@ pstfidf[which(pstfidf$n < 50 & pstfidf$tf_idf < 0.0004),] -> Ps_nonword_vec
 tail(Ps_nonword_vec, 125)
 
 print('useless words of negative words') # "Brushing" word/conversation 
-ngtfidf[which(ngtfidf$n < 50 & ngtfidf$tf_idf < 0.0005),] -> Ng_nonword_vec
+ngtfidf[which(ngtfidf$n < 50 & ngtfidf$tf_idf < 0.001),] -> Ng_nonword_vec
 tail(Ng_nonword_vec, 125)
-
 
 #just test!
 Ps_nonword_vec$id -> Ps_conversation_id
@@ -166,6 +194,5 @@ nreviews$X.U.FEFF.comments[Ng_conversation_id] -> Ng_conversation
 if(SAVE){
   pstfidf %>% write.csv(file = "save/pstfidf.csv", row.names = FALSE)
   ngtfidf %>% write.csv(file = "save/ngtfidf.csv", row.names = FALSE)
-  
 }
 

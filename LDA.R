@@ -1,12 +1,17 @@
-#@author: chenxinye
-
+if(FALSE){
+  # -*- coding: utf-8 -*-
+  "
+  Created on Tue Nov 26 21:27:12 2019
+  @author: chenxinye
+  "
+}
 library(NLP)
 library(tm)
 library(topicmodels)
 library(ggplot2)
 library(magrittr)
 
-setwd("C:/Users/Administrator/Desktop/E-commerce information mining/history")
+setwd('I:/E-commerce information mining/history')
 pdata.freq <- read.csv("term_freq.csv", stringsAsFactors = FALSE)
 
 

@@ -1,11 +1,17 @@
-#@author: chenxinye
+if(FALSE){
+  # -*- coding: utf-8 -*-
+  "
+  Created on Tue Nov 26 21:27:12 2019
+  @author: chenxinye
+  "
+}
 
 library(wordcloud2)
 library(magrittr)
 library(jiebaR)
 
-setwd("C:/Users/Administrator/Desktop/E-commerce information mining/history")
-df_ng <- read.csv("100003142993差评.csv", header=F, encoding = 'UTF-8')
+setwd('I:/E-commerce information mining/history')
+df_ng <- read.csv("100003142993ne.csv", header=F, encoding = 'UTF-8')
 
 
 cutter <- worker(type = "tag", stop_word = "dict/stoplist.txt")
@@ -97,7 +103,7 @@ return_freq <- function(result,is_sort = TRUE){
   #word.frep <- word.frep[!is.na(word.frep$Var1),]
   #word.frep <- word.frep[which(word.frep$Var1 != "NA"),]
   #word.frep <- word.frep[which(word.frep$Var1 != "日期"),]
-  #word.frep <- word.frep[which(word.frep$Var1 != "矮"),]
+  #word.frep <- word.frep[which(word.frep$Var1 != "�?"),]
   return (word.frep)
 }
 

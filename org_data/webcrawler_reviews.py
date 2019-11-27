@@ -50,7 +50,7 @@ class get_JDreview:
         self.df = pd.DataFrame({'comments':list(set(response))})
 
         if save:
-            self.df.to_csv('org_data' + str(sku) + nature +  '.csv', encoding='utf_8_sig', index = False)
+            self.df.to_csv(str(sku) + nature +  '.csv', encoding='utf_8_sig', index = False)
 
 
     def research_transform(self, regex, text):

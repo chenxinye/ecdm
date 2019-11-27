@@ -1,8 +1,15 @@
+if(FALSE){
+  # -*- coding: utf-8 -*-
+  "
+  Created on Tue Nov 26 21:27:12 2019
+  @author: chenxinye
+  "
+}
 
 library(pacman)
 p_load(jiebaR,wordcloud2,tidyverse,tidytext,data.table,rio)
 
-setwd("C:/Users/Administrator/Desktop/E-commerce information mining/history")
+setwd('I:/E-commerce information mining/history')
 df_ng <- read.csv("neg_all.csv", header=T)
 
 df_ng %>% bind_tf_idf(
@@ -15,9 +22,9 @@ df_ng %>% unnest() %>% count(id,word) -> f_table
 
 filter_word <- c('米粉',
                  '我家',
-                 '爱',
-                 '第二次',
-                 '未填写',
+                 '�?',
+                 '第二�?',
+                 '未填�?',
                  '做个',
                  '总体',
                  '方法'

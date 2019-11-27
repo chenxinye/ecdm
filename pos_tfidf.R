@@ -1,8 +1,15 @@
+if(FALSE){
+  # -*- coding: utf-8 -*-
+  "
+  Created on Tue Nov 26 21:27:12 2019
+  @author: chenxinye
+  "
+}
 
 library(pacman)
 p_load(jiebaR,wordcloud2,tidyverse,tidytext,data.table,rio)
 
-setwd("C:/Users/Administrator/Desktop/E-commerce information mining/history")
+setwd('I:/E-commerce information mining/history')
 df_ps <- read.csv("pos_all.csv", header=T)
 
 df_ps %>% bind_tf_idf(
