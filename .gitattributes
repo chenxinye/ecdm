@@ -1,0 +1,6 @@
+*.js linguist-language=R
+*.css linguist-language=R
+*.html linguist-language=R
+*.java linguist-language=R
+*.py linguist-language=R
+*.cpp linguist-language=R
