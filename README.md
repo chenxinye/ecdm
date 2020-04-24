@@ -1,2 +1,2 @@
 # e-commerce-data-mining
-to be continue
+a package which contains techniques of Web crawler,Text analysis, Spark machine learning and so forth.
